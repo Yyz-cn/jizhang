@@ -644,6 +644,45 @@ label {
   margin-bottom: 12px;
 }
 
+/* ---------- 署名 ---------- */
+
+.maker {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 15;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: .4px;
+  color: #98a2b3;
+  background: rgba(255, 255, 255, .82);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 11px;
+  backdrop-filter: saturate(180%) blur(8px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.maker.has-link { pointer-events: auto; }
+
+.maker a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.maker a:hover { text-decoration: underline; }
+
+@media (prefers-color-scheme: dark) {
+  .maker { background: rgba(27, 36, 48, .8); color: #9aa6b8; border-color: #2b3647; }
+}
+
+@media (max-width: 620px) {
+  .maker { right: 10px; bottom: 10px; font-size: 10px; padding: 5px 9px; }
+  .toast { bottom: 56px; }
+}
+
 /* ---------- 弹窗 ---------- */
 
 .modal {
@@ -892,6 +931,7 @@ label {
   </section>
 </main>
 
+<div class="maker" id="maker"></div>
 <div class="modal hidden" id="modal"><div class="modal-card"></div></div>
 <div class="toast" id="toast"></div>
 
@@ -1548,6 +1588,9 @@ label {
 
   var C = window.Core;
   var KEY = 'jizhang.data.v1';
+
+  /* 署名：改这两行即可（link 留空则只显示文字） */
+  var MAKER = { name: 'Yyz-cn', link: '' };
 
   /* ---------- 存储 ---------- */
 
@@ -2255,10 +2298,24 @@ label {
     });
   }
 
+  /* ---------- 署名 ---------- */
+
+  function renderMaker() {
+    var el = $('#maker');
+    if (!el || !MAKER.name) return;
+    if (MAKER.link) {
+      el.innerHTML = '制作 · <a href="' + esc(MAKER.link) + '" target="_blank" rel="noopener noreferrer">' + esc(MAKER.name) + '</a>';
+      el.classList.add('has-link');
+    } else {
+      el.textContent = '制作 · ' + MAKER.name;
+    }
+  }
+
   /* ---------- 启动 ---------- */
 
   document.addEventListener('DOMContentLoaded', function () {
     bind();
+    renderMaker();
     $('#date').value = today;
     if (!store.ok) $('#storageWarn').classList.remove('hidden');
     var start = (location.hash || '').replace('#', '');
